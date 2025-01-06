@@ -5,11 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-
 import java.io.*;
 import java.util.Iterator;
 
-public class ExcelReader {
+public class SFZdouble {
 
     // 读取文件内容并返回字符串
     public static String readFileAndOutput(String filePath) {
@@ -54,8 +53,9 @@ public class ExcelReader {
             headerRow.createCell(0).setCellValue("createdDate");
             headerRow.createCell(1).setCellValue("licenseCode");
             headerRow.createCell(2).setCellValue("issueDate");
-            headerRow.createCell(3).setCellValue("holderIdentityNum");
-            headerRow.createCell(4).setCellValue("idCode");
+            headerRow.createCell(3).setCellValue("holderIdentityNum1");
+            headerRow.createCell(4).setCellValue("holderIdentityNum2");
+            headerRow.createCell(5).setCellValue("idCode");
 
             // 遍历 JSON 数据并写入 Excel 文件
             Iterator<JsonNode> elements = hitsNode.elements();
@@ -69,15 +69,24 @@ public class ExcelReader {
                 row.createCell(1).setCellValue(sourceNode.path("licenseCode").asText());
                 row.createCell(2).setCellValue(sourceNode.path("issueDate").asText());
 
-                // "holderIdentityNum" 是一个数组，这里取第一个元素
+                // "holderIdentityNum" 是一个数组，这里取最多两个元素
                 JsonNode holderIdentityNumNode = sourceNode.path("holderIdentityNum");
-                if (holderIdentityNumNode.isArray() && holderIdentityNumNode.size() > 0) {
-                    row.createCell(3).setCellValue(holderIdentityNumNode.get(0).asText());
-                } else {
-                    row.createCell(3).setCellValue("");
+                if (holderIdentityNumNode.isArray()) {
+                    // 如果数组不为空，写入第一个元素
+                    if (holderIdentityNumNode.size() > 0) {
+                        row.createCell(3).setCellValue(holderIdentityNumNode.get(0).asText());
+                    } else {
+                        row.createCell(3).setCellValue(""); // 空值
+                    }
+                    // 如果数组中有第二个元素，写入第二个元素
+                    if (holderIdentityNumNode.size() > 1) {
+                        row.createCell(4).setCellValue(holderIdentityNumNode.get(1).asText());
+                    } else {
+                        row.createCell(4).setCellValue(""); // 空值
+                    }
                 }
 
-                row.createCell(4).setCellValue(sourceNode.path("idCode").asText());
+                row.createCell(5).setCellValue(sourceNode.path("idCode").asText());
             }
 
             // 将 Excel 数据写入文件
