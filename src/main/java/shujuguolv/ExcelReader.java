@@ -39,8 +39,9 @@ public class ExcelReader {
 
     public static void main(String[] args) {
         // 设置文件路径
-        String filePath = "C:\\Users\\潘强\\Desktop\\data.txt"; // 请根据实际文件路径修改
+//        String filePath = "C:\\Users\\潘强\\Desktop\\data.txt"; // 请根据实际文件路径修改
 
+        String filePath = "/home/zh/data.txt"; // 请根据实际文件路径修改
         // 读取文件并获取文件内容
         String jsonString = readFileAndOutput(filePath);
         if (jsonString.isEmpty()) {
@@ -92,7 +93,8 @@ public class ExcelReader {
             }
 
             // 将 Excel 数据写入文件
-            try (FileOutputStream fileOut = new FileOutputStream("C:\\Users\\潘强\\Desktop\\license_data.xlsx")) {
+//            try (FileOutputStream fileOut = new FileOutputStream("C:\\Users\\潘强\\Desktop\\license_data.xlsx")) {
+            try (FileOutputStream fileOut = new FileOutputStream("/home/zh/license_code.xlsx")) {
                 workbook.write(fileOut);
             } catch (IOException e) {
                 System.err.println("写入 Excel 文件时发生错误: " + e.getMessage());
