@@ -16,6 +16,7 @@ import java.util.Iterator;
  *             "holderIdentityNum1"
  *             "holderIdentityNum2"
  *             "idCode"
+ *             "expiryDate"
  *            并存入excel中
  */
 public class SFZdouble {
@@ -66,6 +67,7 @@ public class SFZdouble {
             headerRow.createCell(3).setCellValue("holderIdentityNum1");
             headerRow.createCell(4).setCellValue("holderIdentityNum2");
             headerRow.createCell(5).setCellValue("idCode");
+            headerRow.createCell(6).setCellValue("expiryDate");
 
             // 遍历 JSON 数据并写入 Excel 文件
             Iterator<JsonNode> elements = hitsNode.elements();
@@ -97,6 +99,7 @@ public class SFZdouble {
                 }
 
                 row.createCell(5).setCellValue(sourceNode.path("idCode").asText());
+                row.createCell(6).setCellValue(sourceNode.path("expiryDate").asText());
             }
 
             // 将 Excel 数据写入文件
