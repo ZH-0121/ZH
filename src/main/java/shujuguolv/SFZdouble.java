@@ -8,6 +8,16 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.*;
 import java.util.Iterator;
 
+/**
+ * 筛选证照为双身份证证照，如出生证明
+ * 读取txt文件返回"createdDate"
+ *              "licenseCode"
+ *              "issueDate"
+ *             "holderIdentityNum1"
+ *             "holderIdentityNum2"
+ *             "idCode"
+ *            并存入excel中
+ */
 public class SFZdouble {
 
     // 读取文件内容并返回字符串

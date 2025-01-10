@@ -9,6 +9,15 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.*;
 import java.util.Iterator;
 
+/**
+ * 读取txt文件，返回 "createdDate"
+ *             "licenseCode"
+ *             "issueDate"
+ *            "holderIdentityNum"
+ *            "idCode"
+ *            "expiryDate"
+ *            并存入excel中
+ */
 public class ExcelReader {
 
     // 读取文件内容并返回字符串
@@ -56,6 +65,7 @@ public class ExcelReader {
             headerRow.createCell(2).setCellValue("issueDate");
             headerRow.createCell(3).setCellValue("holderIdentityNum");
             headerRow.createCell(4).setCellValue("idCode");
+            headerRow.createCell(5).setCellValue("expiryDate");
 
             // 遍历 JSON 数据并写入 Excel 文件
             Iterator<JsonNode> elements = hitsNode.elements();
@@ -78,6 +88,7 @@ public class ExcelReader {
                 }
 
                 row.createCell(4).setCellValue(sourceNode.path("idCode").asText());
+                row.createCell(5).setCellValue(sourceNode.path("expiryDate").asText());
             }
 
             // 将 Excel 数据写入文件

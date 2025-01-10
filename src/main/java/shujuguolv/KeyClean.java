@@ -8,6 +8,9 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
+/**
+ * 读取TXT文件，返回单条数据存放在txt中
+ */
 public class KeyClean {
 
     public static void main(String[] args) {

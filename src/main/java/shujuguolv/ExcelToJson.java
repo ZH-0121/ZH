@@ -10,6 +10,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 
+/**
+ * 读取表格中的数据，转换为json格式
+ *
+ */
 public class ExcelToJson {
 
     public static void main(String[] args) {
@@ -37,13 +41,15 @@ public class ExcelToJson {
             Row row = sheet.getRow(rowIndex);
             if (row != null) {
                 String licenseCode = row.getCell(0).getStringCellValue();  // 第一列
-                String holderIdentityNum1 = row.getCell(1).getStringCellValue();  // 第二列
-                String holderIdentityNum2 = row.getCell(2).getStringCellValue();  // 第三列
+                String holderIdentityNum = row.getCell(1).getStringCellValue();//第二列
+        //        String holderIdentityNum1 = row.getCell(1).getStringCellValue();  // 第二列
+       //         String holderIdentityNum2 = row.getCell(2).getStringCellValue();  // 第三列
 
                 Map<String, String> dataMap = new HashMap<>();
                 dataMap.put("license_code", licenseCode);
-                dataMap.put("holderIdentityNum1", holderIdentityNum1);
-                dataMap.put("holderIdentityNum2", holderIdentityNum2);
+                dataMap.put("holderIdentityNum",holderIdentityNum);
+    //            dataMap.put("holderIdentityNum1", holderIdentityNum1);
+   //             dataMap.put("holderIdentityNum2", holderIdentityNum2);
                 dataList.add(dataMap);
             }
         }
