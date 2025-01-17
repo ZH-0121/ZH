@@ -42,14 +42,14 @@ public class ExcelToJson {
             if (row != null) {
                 String licenseCode = row.getCell(0).getStringCellValue();  // 第一列
 //                String holderIdentityNum = row.getCell(1).getStringCellValue();//第二列
-                String holderIdentityNum1 = row.getCell(1).getStringCellValue();  // 第二列
-                String holderIdentityNum2 = row.getCell(2).getStringCellValue();  // 第三列
+//                String holderIdentityNum1 = row.getCell(1).getStringCellValue();  // 第二列
+//                String holderIdentityNum2 = row.getCell(2).getStringCellValue();  // 第三列
 
                 Map<String, String> dataMap = new HashMap<>();
                 dataMap.put("license_code", licenseCode);
 //                dataMap.put("holderIdentityNum",holderIdentityNum);
-                dataMap.put("holderIdentityNum1", holderIdentityNum1);
-                dataMap.put("holderIdentityNum2", holderIdentityNum2);
+//                dataMap.put("holderIdentityNum1", holderIdentityNum1);
+//                dataMap.put("holderIdentityNum2", holderIdentityNum2);
                 dataList.add(dataMap);
             }
         }
