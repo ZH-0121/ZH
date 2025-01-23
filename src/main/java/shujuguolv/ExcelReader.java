@@ -65,7 +65,8 @@ public class ExcelReader {
             headerRow.createCell(2).setCellValue("issueDate");
             headerRow.createCell(3).setCellValue("holderIdentityNum");
             headerRow.createCell(4).setCellValue("idCode");
-            headerRow.createCell(5).setCellValue("expiryDate");
+            headerRow.createCell(5).setCellValue("issueOrgName");
+            headerRow.createCell(6).setCellValue("name");
 
             // 遍历 JSON 数据并写入 Excel 文件
             Iterator<JsonNode> elements = hitsNode.elements();
@@ -88,7 +89,14 @@ public class ExcelReader {
                 }
 
                 row.createCell(4).setCellValue(sourceNode.path("idCode").asText());
-                row.createCell(5).setCellValue(sourceNode.path("expiryDate").asText());
+                row.createCell(5).setCellValue(sourceNode.path("issueOrgName").asText());
+                row.createCell(6).setCellValue(sourceNode.path("name").asText());
+                JsonNode holderName = sourceNode.path("holderName");
+                if (holderName.isArray() && holderName.size() > 0) {
+                    row.createCell(7).setCellValue(holderName.get(0).asText());
+                } else {
+                    row.createCell(7).setCellValue("");
+                }
             }
 
             // 将 Excel 数据写入文件
