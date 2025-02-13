@@ -66,7 +66,7 @@ public class ExcelReader {
             headerRow.createCell(3).setCellValue("holderIdentityNum");
             headerRow.createCell(4).setCellValue("idCode");
             headerRow.createCell(5).setCellValue("expiryDate");
-           // headerRow.createCell(6).setCellValue("name");
+            headerRow.createCell(6).setCellValue("name");
 
             // 遍历 JSON 数据并写入 Excel 文件
             Iterator<JsonNode> elements = hitsNode.elements();

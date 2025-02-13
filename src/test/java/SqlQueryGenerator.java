@@ -12,7 +12,7 @@ public class SqlQueryGenerator {
 
     public static void main(String[] args) throws IOException {
         // 读取 Excel 文件并提取表名
-        List<String> tableNames = readTableNamesFromExcel("C:\\Users\\潘强\\Desktop\\36.xls"); // 注意路径和文件类型
+        List<String> tableNames = readTableNamesFromExcel("C:\\Users\\潘强\\Desktop\\76.xls"); // 注意路径和文件类型
 
         // 调用方法生成 SQL 查询
         String sqlQuery = generateSqlQuery(tableNames);
