@@ -1,10 +1,12 @@
 package shujuguolv;
 
-// 导入依赖库
+// 导入所需的库
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.json.JSONObject;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -13,59 +15,64 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Scanner;
 
+
+
+
+
 /**
- * 户口簿信息提取客户端
- * 核心功能：
+ * 居住证信息提取客户端程序
+ * 主要功能：
  * 1. 从Excel读取身份证号列表
  * 2. 调用认证接口获取用证码（AuthCode）
  * 3. 使用用证码调用证照提取接口
  * 4. 解析返回的JSON数据并保存到Excel
  */
-public class LicenseAppClientToExcel {
+public class LicenseAppClientToExcelJZZ {
 
     // 配置常量
-    private static final String ACCESS_TOKEN = "ca8c9ce3-bcf6-4edc-aa2a-c56ab016464a";
+    private static final String ACCESS_TOKEN = "cd2a1a04-9690-464e-8113-adf0aea4284b";
     private static final String BASE_URL = "http://172.26.50.55:9090/license-app/v1/license";
-    private static final ObjectMapper objectMapper = new ObjectMapper();  // JSON解析器
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
+
 
     public static void main(String[] args) {
         try {
-            // 从Excel文件读取身份证号（第一列数据）
-            List<String> identityNumbers = readIdentityNumbersFromExcel("C:\\Users\\潘强\\Desktop\\identity_numbers_jianhuren.xlsx");
+            // 从Excel读取身份证号列表（第一列数据）
+            List<String> identityNumbers = readIdentityNumbersFromExcel("C:\\Users\\潘强\\Desktop\\identity_numbers_feijing.xlsx");
             if (identityNumbers.isEmpty()) {
                 System.err.println("Excel 文件中未找到身份证号！");
                 return;
             }
 
-            // 创建新的Excel工作簿
+            // 创建新的Excel工作簿和Sheet
             Workbook workbook = new XSSFWorkbook();
-            Sheet sheet = workbook.createSheet("Extracted Data");  // 创建数据表
+            Sheet sheet = workbook.createSheet("Extracted Data");
 
             // 创建表头行
             Row headerRow = sheet.createRow(0);
             headerRow.createCell(0).setCellValue("身份证号");
             headerRow.createCell(1).setCellValue("AuthCode");
-            headerRow.createCell(2).setCellValue("YHZGXDM");  // 与户主关系代码
-            headerRow.createCell(3).setCellValue("HZ_XM");     // 户主姓名
+            headerRow.createCell(2).setCellValue("ZZHM");
 
-            int rowNum = 1;  // 数据行起始位置
+            int rowNum = 1;  // 数据行从第二行开始
 
-            // 遍历处理每个身份证号
+            // 遍历每个身份证号进行处理
             for (String identityNumber : identityNumbers) {
                 System.out.println("正在处理身份证号: " + identityNumber);
 
-                // 关键步骤1：获取用证码列表
+                // **关键步骤1：调用第一个接口获取用证码列表**
                 List<String> authCodes = callFirstApi(identityNumber);
                 if (authCodes != null && !authCodes.isEmpty()) {
-                    // 保存用证码到文本文件
+                    // 将用证码保存到文本文件
                     saveAuthCodesToFile("C:\\Users\\潘强\\Desktop\\auth_codes.txt", authCodes, identityNumber);
 
-                    // 遍历每个用证码获取详细信息
+                    // 遍历每个用证码进行详细查询
                     for (String authCode : authCodes) {
-                        // 关键步骤2：调用数据提取接口
+                        // **关键步骤2：调用第二个接口获取证照详细信息**
                         String secondApiResponse = callSecondApi(authCode);
                         if (secondApiResponse != null) {
-                            // 解析并保存数据到Excel
+                            // 解析并保存返回数据到Excel
                             extractAndSaveFields(secondApiResponse, identityNumber, authCode, sheet, rowNum);
                             rowNum++;  // 行号递增
                         }
@@ -73,12 +80,12 @@ public class LicenseAppClientToExcel {
                 }
             }
 
-            // 写入Excel文件
-            try (FileOutputStream fileOut = new FileOutputStream("C:\\Users\\潘强\\Desktop\\户口簿信息_jianhuren.xlsx")) {
+            // 将Excel写入文件
+            try (FileOutputStream fileOut = new FileOutputStream("C:\\Users\\潘强\\Desktop\\居住证信息.xlsx")) {
                 workbook.write(fileOut);
             }
             workbook.close();
-            System.out.println("数据已保存到 户口簿信息.xlsx");
+            System.out.println("数据已保存到 居住证信息.xlsx");
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -87,8 +94,6 @@ public class LicenseAppClientToExcel {
 
     /**
      * 从Excel文件读取身份证号列表
-     * @param filePath Excel文件路径
-     * @return 身份证号列表
      */
     private static List<String> readIdentityNumbersFromExcel(String filePath) throws IOException {
         List<String> identityNumbers = new ArrayList<>();
@@ -96,7 +101,7 @@ public class LicenseAppClientToExcel {
              Workbook workbook = new XSSFWorkbook(fileInputStream)) {
             Sheet sheet = workbook.getSheetAt(0);  // 读取第一个工作表
             for (Row row : sheet) {
-                Cell cell = row.getCell(0);      // 读取第一列数据
+                Cell cell = row.getCell(0);  // 读取第一列
                 if (cell != null && cell.getCellType() == CellType.STRING) {
                     identityNumbers.add(cell.getStringCellValue());
                 }
@@ -106,21 +111,19 @@ public class LicenseAppClientToExcel {
     }
 
     /**
-     * 调用认证接口获取用证码
-     * @param identityNumber 身份证号
-     * @return 用证码列表
+     * 调用第一个接口获取用证码列表
      */
     private static List<String> callFirstApi(String identityNumber) throws IOException {
         String url = BASE_URL + "/auth?access_token=" + ACCESS_TOKEN;
         // 构建JSON请求体
         String requestBody = String.format("{\n" +
                 "    \"identity_number\": \"%s\",\n" +
-                "    \"service_item_code\": \"0345674110X45111111111000002140X100\",\n" +  // 服务事项唯一编码
-                "    \"service_item_name\": \"户口簿查询事项\",\n" +                        // 服务事项名称
-                "    \"page_size\": 150,\n" +                                              // 每页数量
-                "    \"page_index\": 1,\n" +                                               // 页码
-                "    \"request_id\": \"999556f1f488269e016a382d8dd8111e\",\n" +            // 请求ID
-                "    \"operator\": {\n" +                                                  // 操作员信息
+                "    \"service_item_code\": \"1200034002110000021135100\",\n" +
+                "    \"service_item_name\": \"居住证查询事项\",\n" +
+                "    \"page_size\": 150,\n" +
+                "    \"page_index\": 1,\n" +
+                "    \"request_id\": \"999556f1f488269e016a382d8dd8111e\",\n" +
+                "    \"operator\": {\n" +
                 "        \"account\": \"1\",\n" +
                 "        \"identity_num\": \"11111\",\n" +
                 "        \"role\": \"csjs\",\n" +
@@ -144,16 +147,16 @@ public class LicenseAppClientToExcel {
                 }
                 return authCodes;
             } else {
-                System.err.println("接口返回无可用用证码: " + response);
+                System.err.println("返回结果中未找到用证码: " + response);
             }
+        } else {
+            System.err.println("接口返回空响应，身份证号: " + identityNumber);
         }
         return null;
     }
 
     /**
-     * 调用数据提取接口
-     * @param authCode 用证码
-     * @return 接口响应数据
+     * 调用第二个接口获取证照详细信息
      */
     private static String callSecondApi(String authCode) throws IOException {
         String url = BASE_URL + "/get_license?auth_code=" + authCode + "&access_token=" + ACCESS_TOKEN;
@@ -172,23 +175,19 @@ public class LicenseAppClientToExcel {
         connection.setDoOutput(true);
 
         // 发送请求体
-        try (OutputStream os = connection.getOutputStream()) {
-            byte[] input = requestBody.getBytes(StandardCharsets.UTF_8);
-            os.write(input, 0, input.length);
-        }
+        connection.getOutputStream().write(requestBody.getBytes(StandardCharsets.UTF_8));
 
-        // 处理响应
         int responseCode = connection.getResponseCode();
         if (responseCode == HttpURLConnection.HTTP_OK) {
             StringBuilder response = new StringBuilder();
-            try (Scanner scanner = new Scanner(connection.getInputStream(), "UTF-8")) {
+            try (Scanner scanner = new Scanner(connection.getInputStream(), String.valueOf(StandardCharsets.UTF_8))) {
                 while (scanner.hasNextLine()) {
                     response.append(scanner.nextLine());
                 }
             }
             return response.toString();
         } else {
-            System.err.println("POST请求失败，状态码: " + responseCode);
+            System.err.println("POST 请求失败，响应码: " + responseCode);
             return null;
         }
     }
@@ -197,14 +196,14 @@ public class LicenseAppClientToExcel {
      * 保存用证码到文本文件（追加模式）
      */
     private static void saveAuthCodesToFile(String fileName, List<String> authCodes, String identityNumber) throws IOException {
-        try (FileWriter writer = new FileWriter(fileName, true)) {  // true表示追加模式
+        try (FileWriter writer = new FileWriter(fileName, true)) {
             writer.write("身份证号: " + identityNumber + "\n");
             for (String authCode : authCodes) {
                 writer.write("AuthCode: " + authCode + "\n");
             }
-            writer.write("\n");  // 添加空行分隔不同身份证号
+            writer.write("\n");
         }
-        System.out.println("用证码已保存至: " + fileName);
+        System.out.println("AuthCodes 已保存到 " + fileName);
     }
 
     /**
@@ -219,28 +218,28 @@ public class LicenseAppClientToExcel {
         int responseCode = connection.getResponseCode();
         if (responseCode == HttpURLConnection.HTTP_OK) {
             StringBuilder response = new StringBuilder();
-            try (Scanner scanner = new Scanner(connection.getInputStream(), "UTF-8")) {
+            try (Scanner scanner = new Scanner(connection.getInputStream(), String.valueOf(StandardCharsets.UTF_8))) {
                 while (scanner.hasNextLine()) {
                     response.append(scanner.nextLine());
                 }
             }
             return response.toString();
         } else {
-            System.err.println("GET请求失败，状态码: " + responseCode);
+            System.err.println("GET 请求失败，响应码: " + responseCode);
             return null;
         }
     }
 
     /**
-     * 解析并保存字段数据（核心数据解析逻辑）
+     * 解析返回数据并保存到Excel
      */
     private static void extractAndSaveFields(String response, String identityNumber, String authCode, Sheet sheet, int rowNum) throws IOException {
         JsonNode rootNode = objectMapper.readTree(response);
 
-        // 检查接口返回状态
+        // 检查返回状态码
         String ackCode = rootNode.path("ack_code").asText();
         if (!"SUCCESS".equals(ackCode)) {
-            System.out.println("接口返回失败状态，AuthCode: " + authCode);
+            System.out.println("接口返回失败状态，跳过保存。AuthCode: " + authCode);
             return;
         }
 
@@ -248,25 +247,24 @@ public class LicenseAppClientToExcel {
         JsonNode dataNode = rootNode.path("data");
         if (dataNode.isMissingNode()) return;
 
-        /** 关键解析步骤：处理嵌套的JSON字符串 */
+        // **关键步骤3：处理嵌套的JSON字符串**
         String dataFieldsStr = dataNode.path("data_fields").asText()
-                .replace('\'', '\"');  // 统一引号格式
+                .replace('\'', '\"'); // 替换单引号为双引号确保JSON解析成功
 
         try {
+            // 解析二级JSON数据
             JsonNode dataFieldsNode = objectMapper.readTree(dataFieldsStr);
 
-            // 提取目标字段（带默认值处理）
-            String yhzgxdm = dataFieldsNode.path("YHZGXDM").asText("");  // 与户主关系代码
-            String hzXm = dataFieldsNode.path("HZ_XM").asText("");       // 户主姓名
+            // 提取目标字段
+            String zzhm = dataFieldsNode.path("ZZHM").asText(""); // 居住证号码
 
-            // 创建Excel数据行
+            // 创建Excel行并写入数据
             Row row = sheet.createRow(rowNum);
-            row.createCell(0).setCellValue(identityNumber);  // 身份证号
-            row.createCell(1).setCellValue(authCode);        // 用证码
-            row.createCell(2).setCellValue(yhzgxdm);         // 关系代码
-            row.createCell(3).setCellValue(hzXm);           // 户主姓名
+            row.createCell(0).setCellValue(identityNumber);
+            row.createCell(1).setCellValue(authCode);
+            row.createCell(2).setCellValue(zzhm);
         } catch (Exception e) {
-            System.err.println("解析data_fields异常，AuthCode: " + authCode);
+            System.err.println("解析data_fields失败，AuthCode: " + authCode);
             e.printStackTrace();
         }
     }
