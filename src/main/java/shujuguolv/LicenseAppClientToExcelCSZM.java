@@ -20,13 +20,13 @@ import java.util.Scanner;
  */
 public class LicenseAppClientToExcelCSZM {
 
-    private static final String ACCESS_TOKEN = "cd2a1a04-9690-464e-8113-adf0aea4284b";
+    private static final String ACCESS_TOKEN = "db86e0a7-355b-4b19-9d85-51572e39f942";
     private static final String BASE_URL = "http://172.26.50.55:9090/license-app/v1/license";
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public static void main(String[] args) {
         try {
-            List<String> identityNumbers = readIdentityNumbersFromExcel("C:\\Users\\潘强\\Desktop\\identity_numbers_jianhuren.xlsx");
+            List<String> identityNumbers = readIdentityNumbersFromExcel("C:\\Users\\潘强\\Desktop\\feijing_jianhuren.xlsx");
             if (identityNumbers.isEmpty()) {
                 System.err.println("Excel 文件中未找到身份证号！");
                 return;
@@ -62,7 +62,7 @@ public class LicenseAppClientToExcelCSZM {
             }
 
             // Write the Excel file to disk
-            try (FileOutputStream fileOut = new FileOutputStream("C:\\Users\\潘强\\Desktop\\出生医学证明信息.xlsx")) {
+            try (FileOutputStream fileOut = new FileOutputStream("C:\\Users\\潘强\\Desktop\\出生医学证明信息_feijing_jianhuren.xlsx")) {
                 workbook.write(fileOut);
             }
             workbook.close();

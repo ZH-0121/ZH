@@ -24,14 +24,14 @@ import java.util.Scanner;
 public class LicenseAppClientToExcel {
 
     // 配置常量
-    private static final String ACCESS_TOKEN = "ca8c9ce3-bcf6-4edc-aa2a-c56ab016464a";
+    private static final String ACCESS_TOKEN = "db86e0a7-355b-4b19-9d85-51572e39f942";
     private static final String BASE_URL = "http://172.26.50.55:9090/license-app/v1/license";
     private static final ObjectMapper objectMapper = new ObjectMapper();  // JSON解析器
 
     public static void main(String[] args) {
         try {
             // 从Excel文件读取身份证号（第一列数据）
-            List<String> identityNumbers = readIdentityNumbersFromExcel("C:\\Users\\潘强\\Desktop\\identity_numbers_jianhuren.xlsx");
+            List<String> identityNumbers = readIdentityNumbersFromExcel("C:\\Users\\潘强\\Desktop\\feijing_jianhuren.xlsx");
             if (identityNumbers.isEmpty()) {
                 System.err.println("Excel 文件中未找到身份证号！");
                 return;
@@ -74,7 +74,7 @@ public class LicenseAppClientToExcel {
             }
 
             // 写入Excel文件
-            try (FileOutputStream fileOut = new FileOutputStream("C:\\Users\\潘强\\Desktop\\户口簿信息_jianhuren.xlsx")) {
+            try (FileOutputStream fileOut = new FileOutputStream("C:\\Users\\潘强\\Desktop\\户口簿信息_feijing_jianhuren.xlsx")) {
                 workbook.write(fileOut);
             }
             workbook.close();
