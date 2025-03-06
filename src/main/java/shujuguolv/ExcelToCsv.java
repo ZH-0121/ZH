@@ -1,80 +1,84 @@
 package shujuguolv;
 
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.poi.util.IOUtils;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ExcelToCsv {
 
-    private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd");
-
     public static void main(String[] args) {
-        // 设置更大的字节数组限制
-        IOUtils.setByteArrayMaxOverride(200000000); // 设置更大的限制
-
-        String excelFilePath = "C:\\Users\\潘强\\Desktop\\juzhudengjika.xlsx";  // 修改为你表格文件的路径
-        String outputCsvFilePath = "C:\\Users\\潘强\\Desktop\\license_codes.csv";  // 输出 CSV 的文件路径
-
+        String folderPath = "C:\\Users\\潘强\\Desktop\\中华人民共和国不动产权证书数据";
+        String csvFilePath = "C:\\Users\\潘强\\Desktop\\中华人民共和国不动产权证书数据.csv";
         try {
-            convertExcelToCsv(excelFilePath, outputCsvFilePath);
+            convertExcelFilesToCsv(folderPath, csvFilePath);
+            System.out.println("数据已成功写入 CSV 文件。");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    // 逐行读取 Excel 文件并写入 CSV 文件
-    private static void convertExcelToCsv(String excelFilePath, String outputCsvFilePath) throws IOException {
-        try (FileInputStream fis = new FileInputStream(new File(excelFilePath));
-             Workbook workbook = new SXSSFWorkbook(new XSSFWorkbook(fis))) {
-            Sheet sheet = workbook.getSheetAt(0);  // 获取第一个工作表
+    public static void convertExcelFilesToCsv(String folderPath, String csvFilePath) throws IOException {
+        Path folder = Paths.get(folderPath);
+        if (!Files.exists(folder) ||!Files.isDirectory(folder)) {
+            throw new IllegalArgumentException("指定的文件夹不存在或不是有效的文件夹。");
+        }
 
-            try (FileWriter fileWriter = new FileWriter(new File(outputCsvFilePath))) {
-                // 写入 CSV 文件的标题行
-                fileWriter.write("license_code,holderIdentityNum,idCode,issueDate,expiryDate\n");
-
-                // 逐行读取数据并写入 CSV 文件
-                for (int rowIndex = 1; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
-                    Row row = sheet.getRow(rowIndex);
-                    if (row != null) {
-                        String licenseCode = getCellValueAsString(row.getCell(0));  // 第一列
-                        String holderIdentityNum = getCellValueAsString(row.getCell(1)); // 第二列
-                        String idCode = getCellValueAsString(row.getCell(2));  // 第三列
-                        String issueDate = getCellValueAsString(row.getCell(3));  // 第四列
-                        String expiryDate = getCellValueAsString(row.getCell(4));  // 第五列
-
-                        // 打印调试信息
-                        System.out.println("Row " + rowIndex + ": " + licenseCode + ", " + holderIdentityNum + ", " + idCode + ", " + issueDate + ", " + expiryDate);
-
-                        // 写入一行数据到 CSV 文件
-                        fileWriter.write(licenseCode + "," + holderIdentityNum + "," + idCode + "," + issueDate + "," + expiryDate + "\n");
+        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(csvFilePath), StandardCharsets.UTF_8))) {
+            File[] files = folder.toFile().listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    if (file.isFile() && (file.getName().endsWith(".xls") || file.getName().endsWith(".xlsx"))) {
+                        processExcelFile(file, writer);
                     }
                 }
             }
         }
-        System.out.println("数据已保存到文件: " + outputCsvFilePath);
     }
 
-    // 获取单元格的值并转换为字符串
+    private static void processExcelFile(File file, BufferedWriter writer) throws IOException {
+        try (InputStream inputStream = new FileInputStream(file);
+             Workbook workbook = getWorkbook(inputStream, file.getName())) {
+            for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
+                Sheet sheet = workbook.getSheetAt(i);
+                for (Row row : sheet) {
+                    List<String> rowData = new ArrayList<>();
+                    for (Cell cell : row) {
+                        rowData.add(getCellValueAsString(cell));
+                    }
+                    writeRowToCsv(writer, rowData);
+                }
+            }
+        }
+    }
+
+    private static Workbook getWorkbook(InputStream inputStream, String fileName) throws IOException {
+        if (fileName.endsWith(".xls")) {
+            return new HSSFWorkbook(inputStream);
+        } else if (fileName.endsWith(".xlsx")) {
+            return new XSSFWorkbook(inputStream);
+        }
+        throw new IllegalArgumentException("不支持的文件格式: " + fileName);
+    }
+
     private static String getCellValueAsString(Cell cell) {
         if (cell == null) {
-            return "";  // 如果单元格为空，返回空字符串
+            return "";
         }
         switch (cell.getCellType()) {
             case STRING:
                 return cell.getStringCellValue();
             case NUMERIC:
                 if (DateUtil.isCellDateFormatted(cell)) {
-                    // 使用静态的 SimpleDateFormat 对象
-                    return SDF.format(cell.getDateCellValue());
+                    return cell.getDateCellValue().toString();
                 } else {
-                    // 如果是数字类型，转换为字符串
                     return String.valueOf(cell.getNumericCellValue());
                 }
             case BOOLEAN:
@@ -84,5 +88,19 @@ public class ExcelToCsv {
             default:
                 return "";
         }
+    }
+
+    private static void writeRowToCsv(BufferedWriter writer, List<String> rowData) throws IOException {
+        for (int i = 0; i < rowData.size(); i++) {
+            if (i > 0) {
+                writer.write(",");
+            }
+            String value = rowData.get(i);
+            if (value.contains(",")) {
+                value = "\"" + value.replace("\"", "\"\"") + "\"";
+            }
+            writer.write(value);
+        }
+        writer.newLine();
     }
 }

@@ -1,3 +1,4 @@
+package shujuguolv;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -17,8 +18,8 @@ import java.util.List;
 public class LicenseAppAbolish {
 
     public static void main(String[] args) {
-        String inputFile = "input.xlsx";
-        String outputFile = "result.txt";
+        String inputFile = "C:\\Users\\潘强\\Desktop\\license_codes.xlsx";
+        String outputFile = "C:\\Users\\潘强\\Desktop\\result.txt";
         String apiUrl = "http://192.158.148.28:9090/license-app/v1/license/20009156300008286X110112/abolish?access_token=de10d5a5-1c63-4590-a833-d8d5f6b8eb51";
 
         try {
