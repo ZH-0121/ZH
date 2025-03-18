@@ -66,6 +66,7 @@ public class ExcelReader {
             headerRow.createCell(3).setCellValue("holderIdentityNum");
             headerRow.createCell(4).setCellValue("idCode");
             headerRow.createCell(5).setCellValue("expiryDate");
+            headerRow.createCell(6).setCellValue("licenseStatus");
 //            headerRow.createCell(6).setCellValue("name");
 //            headerRow.createCell(5).setCellValue("holderName");
 
@@ -91,6 +92,7 @@ public class ExcelReader {
 
                 row.createCell(4).setCellValue(sourceNode.path("idCode").asText());
                 row.createCell(5).setCellValue(sourceNode.path("expiryDate").asText());
+                row.createCell(6).setCellValue(sourceNode.path("licenseStatus").asText());
 //                row.createCell(6).setCellValue(sourceNode.path("name").asText());
               /*  JsonNode holderName = sourceNode.path("holderName");
                 if (holderName.isArray() && holderName.size() > 0) {
