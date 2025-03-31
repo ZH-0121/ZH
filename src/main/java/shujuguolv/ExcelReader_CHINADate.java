@@ -42,7 +42,7 @@ public class ExcelReader_CHINADate {
     }
 
     public static void main(String[] args) {
-        String filePath = "C:\\Users\\潘强\\Desktop\\中华人民共和国不动产权证书数据\\data28.txt";
+        String filePath = "C:\\Users\\潘强\\Desktop\\sfz\\data21.txt";
         String jsonString = readFileAndOutput(filePath);
         if (jsonString.isEmpty()) {
             System.err.println("文件内容为空或读取失败，程序终止");
@@ -59,21 +59,38 @@ public class ExcelReader_CHINADate {
 
             // 创建表头
             Row headerRow = sheet.createRow(0);
-            headerRow.createCell(0).setCellValue("createdDate");
-            headerRow.createCell(1).setCellValue("licenseCode");
-            headerRow.createCell(2).setCellValue("issueDate");
-            headerRow.createCell(3).setCellValue("holderIdentityNum");
-            headerRow.createCell(4).setCellValue("idCode");
-            //headerRow.createCell(5).setCellValue("expiryDate");
-            headerRow.createCell(5).setCellValue("holderName");
+           // headerRow.createCell(0).setCellValue("createdDate");
+
+//            headerRow.createCell(0).setCellValue("issueDate");
+//            headerRow.createCell(1).setCellValue("holderIdentityNum");
+//              headerRow.createCell(2).setCellValue("licenseCode");
+          //  headerRow.createCell(4).setCellValue("idCode");
+          //  headerRow.createCell(5).setCellValue("expiryDate");
+          //  headerRow.createCell(6).setCellValue("holderName");
 
             Iterator<JsonNode> elements = hitsNode.elements();
-            int rowIndex = 1;
+            int rowIndex = 0;
             while (elements.hasNext()) {
                 JsonNode hit = elements.next();
                 JsonNode sourceNode = hit.path("_source");
                 Row row = sheet.createRow(rowIndex++);
 
+                // issueDate
+                String issueDate = sourceNode.path("issueDate").asText("");
+                row.createCell(0).setCellValue(convertToChinaTime(issueDate));
+                // holderIdentityNum
+                JsonNode holderIdentityNum = sourceNode.path("holderIdentityNum");
+                if (holderIdentityNum.isArray() && !holderIdentityNum.isEmpty()) {
+                    row.createCell(1).setCellValue(holderIdentityNum.get(0).asText(""));
+                } else {
+                    row.createCell(1).setCellValue("");
+                }
+                // licenseCode
+                row.createCell(2).setCellValue(sourceNode.path("licenseCode").asText(""));
+
+
+
+/*
                 // createdDate
                 String createdDate = sourceNode.path("createdDate").asText("");
                 row.createCell(0).setCellValue(convertToChinaTime(createdDate));
@@ -97,20 +114,20 @@ public class ExcelReader_CHINADate {
                 row.createCell(4).setCellValue(sourceNode.path("idCode").asText(""));
 
                 // expiryDate
-               /* String expiryDate = sourceNode.path("expiryDate").asText("");
-                row.createCell(5).setCellValue(convertToChinaTime(expiryDate));*/
+                String expiryDate = sourceNode.path("expiryDate").asText("");
+                row.createCell(5).setCellValue(convertToChinaTime(expiryDate));
 
                 // holderName
                 JsonNode holderName = sourceNode.path("holderName");
                 if (holderName.isArray() && !holderName.isEmpty()) {
-                    row.createCell(5).setCellValue(holderName.get(0).asText(""));
+                    row.createCell(6).setCellValue(holderName.get(0).asText(""));
                 } else {
-                    row.createCell(5).setCellValue("");
-                }
+                    row.createCell(6).setCellValue("");
+                }*/
             }
 
             // 写入Excel文件
-            try (FileOutputStream fileOut = new FileOutputStream("C:\\Users\\潘强\\Desktop\\中华人民共和国不动产权证书数据\\license_data28.xlsx")) {
+            try (FileOutputStream fileOut = new FileOutputStream("C:\\Users\\潘强\\Desktop\\sfz\\license_data21.xlsx")) {
                 workbook.write(fileOut);
                 System.out.println("Excel 文件生成成功！");
             } catch (IOException e) {

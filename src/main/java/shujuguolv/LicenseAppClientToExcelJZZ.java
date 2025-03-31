@@ -1,11 +1,11 @@
 package shujuguolv;
 
 // 导入所需的库
+import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.json.JSONObject;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -30,10 +30,9 @@ import java.util.Scanner;
 public class LicenseAppClientToExcelJZZ {
 
     // 配置常量
-    private static final String ACCESS_TOKEN = "cd2a1a04-9690-464e-8113-adf0aea4284b";
+    private static final String ACCESS_TOKEN = "30c26f92-eef9-44a1-8a55-349561b06a17";
     private static final String BASE_URL = "http://172.26.50.55:9090/license-app/v1/license";
     private static final ObjectMapper objectMapper = new ObjectMapper();
-
 
 
     public static void main(String[] args) {
@@ -54,6 +53,10 @@ public class LicenseAppClientToExcelJZZ {
             headerRow.createCell(0).setCellValue("身份证号");
             headerRow.createCell(1).setCellValue("AuthCode");
             headerRow.createCell(2).setCellValue("ZZHM");
+            headerRow.createCell(3).setCellValue("XJZDZ");
+            headerRow.createCell(4).setCellValue("YXQKSRQ");
+            headerRow.createCell(5).setCellValue("YXQJSRQ");
+            headerRow.createCell(6).setCellValue("ZZMC");
 
             int rowNum = 1;  // 数据行从第二行开始
 
@@ -118,7 +121,7 @@ public class LicenseAppClientToExcelJZZ {
         // 构建JSON请求体
         String requestBody = String.format("{\n" +
                 "    \"identity_number\": \"%s\",\n" +
-                "    \"service_item_code\": \"1200034002110000021135100\",\n" +
+                "    \"service_item_code\": \"SJWJSZGZSJZZCX\",\n" +
                 "    \"service_item_name\": \"居住证查询事项\",\n" +
                 "    \"page_size\": 150,\n" +
                 "    \"page_index\": 1,\n" +
@@ -239,7 +242,7 @@ public class LicenseAppClientToExcelJZZ {
         // 检查返回状态码
         String ackCode = rootNode.path("ack_code").asText();
         if (!"SUCCESS".equals(ackCode)) {
-            System.out.println("接口返回失败状态，跳过保存。AuthCode: " + authCode);
+            System.out.println("接口返回失败状态，跳过保存。AuthCode: " + authCode+response);
             return;
         }
 
@@ -257,12 +260,23 @@ public class LicenseAppClientToExcelJZZ {
 
             // 提取目标字段
             String zzhm = dataFieldsNode.path("ZZHM").asText(""); // 居住证号码
+            String xjzdz = dataFieldsNode.path("XJZDZ").asText("");
+            String yxqksrq = dataFieldsNode.path("YXQKSRQ").asText("");
+            String yxqjsrq = dataFieldsNode.path("YXQJSRQ").asText("");
+            String zzmc = dataFieldsNode.path("ZZMC").asText("");
+
+
 
             // 创建Excel行并写入数据
             Row row = sheet.createRow(rowNum);
             row.createCell(0).setCellValue(identityNumber);
             row.createCell(1).setCellValue(authCode);
             row.createCell(2).setCellValue(zzhm);
+            row.createCell(3).setCellValue(xjzdz);
+            row.createCell(4).setCellValue(yxqksrq);
+            row.createCell(5).setCellValue(yxqjsrq);
+            row.createCell(6).setCellValue(zzmc);
+
         } catch (Exception e) {
             System.err.println("解析data_fields失败，AuthCode: " + authCode);
             e.printStackTrace();

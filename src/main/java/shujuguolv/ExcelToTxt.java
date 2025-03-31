@@ -15,8 +15,8 @@ import java.util.List;
 public class ExcelToTxt {
 
     public static void main(String[] args) {
-        String folderPath = "C:\\Users\\潘强\\Desktop\\中华人民共和国不动产权证书数据";
-        String txtFilePath = "C:\\Users\\潘强\\Desktop\\中华人民共和国不动产权证书数据.txt";
+        String folderPath = "C:\\Users\\潘强\\Desktop\\sfz";
+        String txtFilePath = "C:\\Users\\潘强\\Desktop\\sfz.txt";
         try {
             convertExcelFilesToTxt(folderPath, txtFilePath);
             System.out.println("数据已成功追加写入 TXT 文件。");

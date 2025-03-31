@@ -67,7 +67,7 @@ public class ExcelReader {
             headerRow.createCell(4).setCellValue("idCode");
             headerRow.createCell(5).setCellValue("expiryDate");
             headerRow.createCell(6).setCellValue("licenseStatus");
-//            headerRow.createCell(6).setCellValue("name");
+            headerRow.createCell(7).setCellValue("name");
 //            headerRow.createCell(5).setCellValue("holderName");
 
             // 遍历 JSON 数据并写入 Excel 文件
@@ -93,7 +93,7 @@ public class ExcelReader {
                 row.createCell(4).setCellValue(sourceNode.path("idCode").asText());
                 row.createCell(5).setCellValue(sourceNode.path("expiryDate").asText());
                 row.createCell(6).setCellValue(sourceNode.path("licenseStatus").asText());
-//                row.createCell(6).setCellValue(sourceNode.path("name").asText());
+                row.createCell(7).setCellValue(sourceNode.path("name").asText());
               /*  JsonNode holderName = sourceNode.path("holderName");
                 if (holderName.isArray() && holderName.size() > 0) {
                     row.createCell(5).setCellValue(holderName.get(0).asText());

@@ -120,6 +120,11 @@
             <!-- 这里可以根据需要调整版本号，当前最新稳定版本可以在 Maven 仓库网站查询 -->
             <version>2.10.1</version>
         </dependency>
+        <dependency>
+            <groupId>com.belerweb</groupId>
+            <artifactId>pinyin4j</artifactId>
+            <version>2.5.1</version>
+        </dependency>
 
         <dependency>
             <groupId>com.opencsv</groupId>
