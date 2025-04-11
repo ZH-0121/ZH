@@ -42,7 +42,7 @@ public class ExcelReader_CHINADate {
     }
 
     public static void main(String[] args) {
-        String filePath = "C:\\Users\\潘强\\Desktop\\sfz\\data21.txt";
+        String filePath = "C:\\Users\\潘强\\Desktop\\sfz\\data73.txt";
         String jsonString = readFileAndOutput(filePath);
         if (jsonString.isEmpty()) {
             System.err.println("文件内容为空或读取失败，程序终止");
@@ -127,7 +127,7 @@ public class ExcelReader_CHINADate {
             }
 
             // 写入Excel文件
-            try (FileOutputStream fileOut = new FileOutputStream("C:\\Users\\潘强\\Desktop\\sfz\\license_data21.xlsx")) {
+            try (FileOutputStream fileOut = new FileOutputStream("C:\\Users\\潘强\\Desktop\\sfz\\license_data73.xlsx")) {
                 workbook.write(fileOut);
                 System.out.println("Excel 文件生成成功！");
             } catch (IOException e) {

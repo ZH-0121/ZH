@@ -1,5 +1,7 @@
 package shujuguolv;
-
+/*
+* 将文件夹中所有excel中的数据读取到txt中
+* */
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -95,10 +97,10 @@ public class ExcelToTxt {
         for (int i = 0; i < rowData.size(); i++) {
             if (i > 0) {
                 // 这里使用制表符作为分隔符，你也可以根据需要修改为其他分隔符，如逗号
-                writer.write("\t");
+                writer.write(",");
             }
             String value = rowData.get(i);
-            if (value.contains("\t")) {
+            if (value.contains(",")) {
                 // 如果数据中包含分隔符，将其用引号括起来
                 value = "\"" + value.replace("\"", "\"\"") + "\"";
             }
