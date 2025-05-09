@@ -1,4 +1,7 @@
 package shujuguolv;
+/*
+* 读取excel单元格中数据，转换成大写英文首字母+8个随机数
+* */
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -13,7 +16,7 @@ import java.util.Random;
 public class ExcelPinyinGenerator {
     public static void main(String[] args) {
         String inputFilePath = "C:\\Users\\潘强\\Desktop\\input.xlsx";
-        String outputFilePath = "C:\\Users\\潘强\\Desktop\\output.xlsx";
+        String outputFilePath = "C:\\Users\\潘强\\Desktop\\output111.xlsx";
 
         try (FileInputStream fis = new FileInputStream(new File(inputFilePath));
              Workbook workbook = new XSSFWorkbook(fis);

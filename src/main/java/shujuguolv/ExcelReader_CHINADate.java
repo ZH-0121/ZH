@@ -42,7 +42,7 @@ public class ExcelReader_CHINADate {
     }
 
     public static void main(String[] args) {
-        String filePath = "C:\\Users\\潘强\\Desktop\\sfz\\data73.txt";
+        String filePath = "C:\\Users\\潘强\\Desktop\\data.txt";
         String jsonString = readFileAndOutput(filePath);
         if (jsonString.isEmpty()) {
             System.err.println("文件内容为空或读取失败，程序终止");
@@ -59,55 +59,57 @@ public class ExcelReader_CHINADate {
 
             // 创建表头
             Row headerRow = sheet.createRow(0);
-           // headerRow.createCell(0).setCellValue("createdDate");
-
-//            headerRow.createCell(0).setCellValue("issueDate");
-//            headerRow.createCell(1).setCellValue("holderIdentityNum");
-//              headerRow.createCell(2).setCellValue("licenseCode");
-          //  headerRow.createCell(4).setCellValue("idCode");
-          //  headerRow.createCell(5).setCellValue("expiryDate");
-          //  headerRow.createCell(6).setCellValue("holderName");
+           headerRow.createCell(0).setCellValue("createdDate");
+            headerRow.createCell(1).setCellValue("issueDate");
+           headerRow.createCell(2).setCellValue("holderIdentityNum");
+             headerRow.createCell(3).setCellValue("licenseCode");
+            headerRow.createCell(4).setCellValue("idCode");
+            headerRow.createCell(5).setCellValue("expiryDate");
+            headerRow.createCell(6).setCellValue("holderName");
+            headerRow.createCell(7).setCellValue("name");
+            headerRow.createCell(8).setCellValue("abolishBasis");
+            headerRow.createCell(9).setCellValue("licenseStatus");
 
             Iterator<JsonNode> elements = hitsNode.elements();
-            int rowIndex = 0;
+            int rowIndex = 1;
             while (elements.hasNext()) {
                 JsonNode hit = elements.next();
                 JsonNode sourceNode = hit.path("_source");
                 Row row = sheet.createRow(rowIndex++);
 
-                // issueDate
-                String issueDate = sourceNode.path("issueDate").asText("");
-                row.createCell(0).setCellValue(convertToChinaTime(issueDate));
-                // holderIdentityNum
-                JsonNode holderIdentityNum = sourceNode.path("holderIdentityNum");
-                if (holderIdentityNum.isArray() && !holderIdentityNum.isEmpty()) {
-                    row.createCell(1).setCellValue(holderIdentityNum.get(0).asText(""));
-                } else {
-                    row.createCell(1).setCellValue("");
-                }
-                // licenseCode
-                row.createCell(2).setCellValue(sourceNode.path("licenseCode").asText(""));
+//                // issueDate
+//                String issueDate = sourceNode.path("issueDate").asText("");
+//                row.createCell(0).setCellValue(convertToChinaTime(issueDate));
+//                // holderIdentityNum
+//                JsonNode holderIdentityNum = sourceNode.path("holderIdentityNum");
+//                if (holderIdentityNum.isArray() && !holderIdentityNum.isEmpty()) {
+//                    row.createCell(1).setCellValue(holderIdentityNum.get(0).asText(""));
+//                } else {
+//                    row.createCell(1).setCellValue("");
+//                }
+//                // licenseCode
+//                row.createCell(2).setCellValue(sourceNode.path("licenseCode").asText(""));
 
 
 
-/*
+
                 // createdDate
                 String createdDate = sourceNode.path("createdDate").asText("");
                 row.createCell(0).setCellValue(convertToChinaTime(createdDate));
 
                 // licenseCode
-                row.createCell(1).setCellValue(sourceNode.path("licenseCode").asText(""));
+                row.createCell(3).setCellValue(sourceNode.path("licenseCode").asText(""));
 
                 // issueDate
                 String issueDate = sourceNode.path("issueDate").asText("");
-                row.createCell(2).setCellValue(convertToChinaTime(issueDate));
+                row.createCell(1).setCellValue(convertToChinaTime(issueDate));
 
                 // holderIdentityNum
                 JsonNode holderIdentityNum = sourceNode.path("holderIdentityNum");
                 if (holderIdentityNum.isArray() && !holderIdentityNum.isEmpty()) {
-                    row.createCell(3).setCellValue(holderIdentityNum.get(0).asText(""));
+                    row.createCell(2).setCellValue(holderIdentityNum.get(0).asText(""));
                 } else {
-                    row.createCell(3).setCellValue("");
+                    row.createCell(2).setCellValue("");
                 }
 
                 // idCode
@@ -116,6 +118,12 @@ public class ExcelReader_CHINADate {
                 // expiryDate
                 String expiryDate = sourceNode.path("expiryDate").asText("");
                 row.createCell(5).setCellValue(convertToChinaTime(expiryDate));
+                //name
+                row.createCell(7).setCellValue(sourceNode.path("name").asText(""));
+                //abolishBasis
+                row.createCell(8).setCellValue(sourceNode.path("abolishBasis").asText(""));
+
+                row.createCell(9).setCellValue(sourceNode.path("licenseStatus").asText(""));
 
                 // holderName
                 JsonNode holderName = sourceNode.path("holderName");
@@ -123,11 +131,11 @@ public class ExcelReader_CHINADate {
                     row.createCell(6).setCellValue(holderName.get(0).asText(""));
                 } else {
                     row.createCell(6).setCellValue("");
-                }*/
+                }
             }
 
             // 写入Excel文件
-            try (FileOutputStream fileOut = new FileOutputStream("C:\\Users\\潘强\\Desktop\\sfz\\license_data73.xlsx")) {
+            try (FileOutputStream fileOut = new FileOutputStream("C:\\Users\\潘强\\Desktop\\广播电视节目制作经营许可证.xlsx")) {
                 workbook.write(fileOut);
                 System.out.println("Excel 文件生成成功！");
             } catch (IOException e) {

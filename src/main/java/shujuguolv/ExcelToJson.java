@@ -17,7 +17,7 @@ import java.util.*;
 public class ExcelToJson {
 
     public static void main(String[] args) {
-        String excelFilePath = "C:\\Users\\潘强\\Desktop\\license_codes.xlsx";  // 修改为你表格文件的路径
+        String excelFilePath = "C:\\Users\\潘强\\Desktop\\jsz1.xlsx";  // 修改为你表格文件的路径
         String outputJsonFilePath = "C:\\Users\\潘强\\Desktop\\license_codes.json";  // 输出 JSON 的文件路径
 
         try {

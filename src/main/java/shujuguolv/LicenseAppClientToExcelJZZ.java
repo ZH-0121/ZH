@@ -57,6 +57,7 @@ public class LicenseAppClientToExcelJZZ {
             headerRow.createCell(4).setCellValue("YXQKSRQ");
             headerRow.createCell(5).setCellValue("YXQJSRQ");
             headerRow.createCell(6).setCellValue("ZZMC");
+            headerRow.createCell(7).setCellValue("FZRQ");
 
             int rowNum = 1;  // 数据行从第二行开始
 
@@ -264,6 +265,8 @@ public class LicenseAppClientToExcelJZZ {
             String yxqksrq = dataFieldsNode.path("YXQKSRQ").asText("");
             String yxqjsrq = dataFieldsNode.path("YXQJSRQ").asText("");
             String zzmc = dataFieldsNode.path("ZZMC").asText("");
+            String fzrq = dataFieldsNode.path("FZRQ").asText("");
+
 
 
 
@@ -276,6 +279,9 @@ public class LicenseAppClientToExcelJZZ {
             row.createCell(4).setCellValue(yxqksrq);
             row.createCell(5).setCellValue(yxqjsrq);
             row.createCell(6).setCellValue(zzmc);
+            row.createCell(7).setCellValue(fzrq);
+
+
 
         } catch (Exception e) {
             System.err.println("解析data_fields失败，AuthCode: " + authCode);
@@ -283,3 +289,4 @@ public class LicenseAppClientToExcelJZZ {
         }
     }
 }
+

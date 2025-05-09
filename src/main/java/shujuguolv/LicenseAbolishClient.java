@@ -17,12 +17,12 @@ import java.util.concurrent.TimeUnit;
 
 public class LicenseAbolishClient {
 
-    private static final String API_URL = "http://172.26.50.55:9090/license-app/v1/license/10005000100002888X110000/abolish?access_token=5e23e671-8c17-4b59-80a1-8e9321155061";
+    private static final String API_URL = "http://172.26.50.55:9090/license-app/v1/license/10005000100002888X110000/abolish?access_token=cdf4a184-1747-449d-97c1-e9fc6b443252";
     private static final int THREAD_POOL_SIZE = 10;
     private static final String OUTPUT_FILE = "C:\\Users\\潘强\\Desktop\\result.txt"; // 结果输出文件路径
 
     public static void main(String[] args) {
-        String excelPath = "C:\\Users\\潘强\\Desktop\\jzz0411.xlsx";
+        String excelPath = "C:\\Users\\潘强\\Desktop\\jzz0430.xlsx";
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(OUTPUT_FILE))) {
             List<String> licenseCodes = readLicenseCodesFromExcel(excelPath);
