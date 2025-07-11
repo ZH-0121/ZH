@@ -47,7 +47,7 @@ public class YJCPYZSGD {
         public static String read() throws Exception {
             String access_token = Login();
             String result = null;
-            File file1 = new File("C:\\Users\\潘强\\Desktop\\yijicaipanyuanzhengshu\\SUCCESS.txt");
+            File file1 = new File("C:\\Users\\潘强\\Desktop\\委办制证\\yijicaipanyuanzhengshu\\SUCCESS.txt");
             FileInputStream fis = null;
             InputStreamReader isr = null;
             BufferedReader br = null;
@@ -149,7 +149,7 @@ public class YJCPYZSGD {
                 byte[] bytes = decoder.decodeBuffer(base64sString);
                 ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
                 bin = new BufferedInputStream(bais);
-                File file = new File("C:\\Users\\潘强\\Desktop\\yijicaipanyuanzhengshu\\PDF\\" + pdfName + ".pdf");
+                File file = new File("C:\\Users\\潘强\\Desktop\\委办制证\\yijicaipanyuanzhengshu\\PDF\\" + pdfName + ".pdf");
                 fout = new FileOutputStream(file);
                 bout = new BufferedOutputStream(fout);
                 byte[] buffers = new byte[1024];

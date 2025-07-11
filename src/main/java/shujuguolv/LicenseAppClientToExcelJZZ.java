@@ -30,7 +30,7 @@ import java.util.Scanner;
 public class LicenseAppClientToExcelJZZ {
 
     // 配置常量
-    private static final String ACCESS_TOKEN = "30c26f92-eef9-44a1-8a55-349561b06a17";
+    private static final String ACCESS_TOKEN = "b3db1942-8807-46e0-996f-74542991cf79";
     private static final String BASE_URL = "http://172.26.50.55:9090/license-app/v1/license";
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -38,7 +38,7 @@ public class LicenseAppClientToExcelJZZ {
     public static void main(String[] args) {
         try {
             // 从Excel读取身份证号列表（第一列数据）
-            List<String> identityNumbers = readIdentityNumbersFromExcel("C:\\Users\\潘强\\Desktop\\identity_numbers_feijing.xlsx");
+            List<String> identityNumbers = readIdentityNumbersFromExcel("C:\\Users\\潘强\\Desktop\\datajuzhu.xlsx");
             if (identityNumbers.isEmpty()) {
                 System.err.println("Excel 文件中未找到身份证号！");
                 return;

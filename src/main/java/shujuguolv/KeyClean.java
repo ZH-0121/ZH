@@ -16,7 +16,7 @@ public class KeyClean {
 
     public static void main(String[] args) {
         // 假设你的 JSON 数据存在于一个文件中
-        String inputFilePath = "C:\\Users\\潘强\\Desktop\\key.txt"; // 替换为你的 JSON 文件路径
+        String inputFilePath = "C:\\Users\\潘强\\Desktop\\data.txt"; // 替换为你的 JSON 文件路径
         String outputFilePath = "C:\\Users\\潘强\\Desktop\\key.txt"; // 输出文件的路径
         String jsonString = readFileAndOutput(inputFilePath);  // 读取文件的内容
         if (jsonString.isEmpty()) {

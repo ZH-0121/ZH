@@ -1,8 +1,10 @@
-package weibanzhizheng.YJCPYZS;
+package weibanzhizheng.YXBYSZS;
 
-/*
-* 一级裁判员委办制证程序
-* */
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by FernFlower decompiler)
+//
+
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -22,6 +24,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -35,26 +39,20 @@ import jxl.read.biff.BiffException;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
-public class YJCPYZ {
+public class YXBYSRYZS {
     static BASE64Encoder encoder = new BASE64Encoder();
     static BASE64Decoder decoder = new BASE64Decoder();
-    static String access_token = null;
     String base = null;
 
-    public YJCPYZ() {
+    public YXBYSRYZS() {
     }
 
-    /**
-     * 读取Excel文件内容，返回二维列表
-     * @param file Excel文件对象
-     * @return List<List> 外层List对应行，内层List对应列数据
-     */
     public List readExcel(File file) {
         try {
             InputStream is = new FileInputStream(file.getAbsolutePath());
-            Workbook wb = Workbook.getWorkbook(is); // 获取工作簿
+            Workbook wb = Workbook.getWorkbook(is);
             int sheet_size = wb.getNumberOfSheets();
-            int index = 0; // 默认处理第一个Sheet
+            int index = 0;
             if (index < sheet_size) {
                 List<List> outerList = new ArrayList();
                 Sheet sheet = wb.getSheet(index);
@@ -64,9 +62,9 @@ public class YJCPYZ {
 
                     for(int j = 0; j < sheet.getColumns(); ++j) {
                         String cellinfo = sheet.getCell(j, i).getContents();
-                        if (!cellinfo.isEmpty()) { // 跳过空单元格（可能导致数据错位）
+                        if (!cellinfo.isEmpty()) {
                             innerList.add(cellinfo);
-                            System.out.print(cellinfo); // 打印单元格内容（调试用）
+                            System.out.print(cellinfo);
                         }
                     }
 
@@ -82,15 +80,51 @@ public class YJCPYZ {
         } catch (IOException var14) {
             var14.printStackTrace();
         }
+
         return null;
     }
 
-    /**
-     * 登录系统获取access_token
-     * @return access_token 用于后续API调用
-     */
+    public static String getPDFBinary(File file) {
+        FileInputStream fin = null;
+        BufferedInputStream bin = null;
+        ByteArrayOutputStream baos = null;
+        BufferedOutputStream bout = null;
+
+        try {
+            fin = new FileInputStream(file);
+            bin = new BufferedInputStream(fin);
+            baos = new ByteArrayOutputStream();
+            bout = new BufferedOutputStream(baos);
+            byte[] buffer = new byte[1024];
+
+            for(int len = bin.read(buffer); len != -1; len = bin.read(buffer)) {
+                bout.write(buffer, 0, len);
+            }
+
+            bout.flush();
+            byte[] bytes = baos.toByteArray();
+            String var8 = encoder.encodeBuffer(bytes).trim();
+            return var8;
+        } catch (FileNotFoundException var20) {
+            var20.printStackTrace();
+        } catch (IOException var21) {
+            var21.printStackTrace();
+        } finally {
+            try {
+                fin.close();
+                bin.close();
+                bout.close();
+            } catch (IOException var19) {
+                var19.printStackTrace();
+            }
+
+        }
+
+        return null;
+    }
+
     public static String Login() throws Exception {
-        URL urlLogin = new URL("http://172.26.50.55:9090/license-app/v1/security/login");
+        URL urlLogin = new URL("http://192.158.148.28:9090/license-app/v1/security/login");
         HttpURLConnection connectionLoginLogin = (HttpURLConnection)urlLogin.openConnection();
         connectionLoginLogin.setRequestMethod("POST");
         connectionLoginLogin.setDoOutput(true);
@@ -98,115 +132,81 @@ public class YJCPYZ {
         connectionLoginLogin.setUseCaches(false);
         connectionLoginLogin.setRequestProperty("Content-Type", "application/json;charset=utf-8");
         connectionLoginLogin.connect();
-
-        // 构造登录请求JSON体
         JSONObject jsonLogin = new JSONObject();
         jsonLogin.put("password", "ATIICiVfbRJWHii");
         jsonLogin.put("app_key", "KvmonFdrBLLRIuJ");
         jsonLogin.put("app_secret", "hGgaKEQolqGXaiU");
-        jsonLogin.put("org_code", "org_code"); // 注意：org_code值可能无效
+        jsonLogin.put("org_code", "org_code");
         jsonLogin.put("account", "gonganjudaizhizheng");
-
-        // 发送请求
         BufferedWriter writerLogin = new BufferedWriter(new OutputStreamWriter(connectionLoginLogin.getOutputStream(), "UTF-8"));
         writerLogin.write(jsonLogin.toJSONString());
         writerLogin.close();
-
-        // 处理响应
         int responseCodeLogin = connectionLoginLogin.getResponseCode();
         String result1Login = null;
         String access_token = null;
         if (responseCodeLogin == 200) {
             InputStream inputStreamLogin = connectionLoginLogin.getInputStream();
-            result1Login = inputStream2String(inputStreamLogin); // 将响应流转换为字符串
-            // 注意：通过字符串截取access_token存在风险，建议使用JSON解析
+            result1Login = inputStream2String(inputStreamLogin);
             access_token = result1Login.substring(219, 255);
         }
+
         return access_token;
     }
 
     public static void main(String[] args) throws Exception {
-        access_token = Login();
-
+        String access_token = Login();
         new Date();
         new SimpleDateFormat("yyyy-MM-dd");
         new ArrayList();
 
         try {
-            Workbook book = Workbook.getWorkbook(new File("C:\\Users\\潘强\\Desktop\\委办制证\\yijicaipanyuanzhengshu\\YJCPYZS.xls"));
+            Workbook book = Workbook.getWorkbook(new File("/share/jzz/YXBYSZS/YXBYSZS.xls"));
             Sheet sheet = book.getSheet(0);
             Cell cell1 = sheet.getCell(1, 0);
             int i = 1;
 
             while(true) {
-                sheet.getCell(0, i);
-                Cell cell2 = sheet.getCell(1, i);   //证照号码
-                Cell cell3 = sheet.getCell(2, i);   //持证人名称
-                Cell cell4 = sheet.getCell(3, i);   //持证人身份类型
-                Cell cell5 = sheet.getCell(4, i);   //持有人身份证件号码
+                cell1 = sheet.getCell(0, i);
+                Cell cell2 = sheet.getCell(1, i);
+                Cell cell3 = sheet.getCell(2, i);
+                Cell cell4 = sheet.getCell(3, i);
+                sheet.getCell(4, i);
                 sheet.getCell(5, i);
                 sheet.getCell(6, i);
-                sheet.getCell(7, i);
-                Cell cell9 = sheet.getCell(8, i);   //发证日期
-                Cell cell10 = sheet.getCell(9, i);  //有效结束日期
+                Cell cell8 = sheet.getCell(7, i);
+                sheet.getCell(8, i);
+                Cell cell10 = sheet.getCell(9, i);
                 Cell cell11 = sheet.getCell(10, i);
                 Cell cell12 = sheet.getCell(11, i);
                 Cell cell13 = sheet.getCell(12, i);
                 Cell cell14 = sheet.getCell(13, i);
                 Cell cell15 = sheet.getCell(14, i);
-                Cell cell16 = sheet.getCell(15, i);//照片
+                Cell cell16 = sheet.getCell(15, i);
                 if ("".equals(cell2.getContents())) {
                     book.close();
                     break;
                 }
 
-                String ZZMC = "一级裁判员证书";
-                String ZZHM = cell2.getContents();
-                String CYRMC = cell3.getContents();
-                String CYRSFZJLX = cell4.getContents();
-                String CYRSFZJHM = cell5.getContents();
-                String FZJGMC = "北京市体育局";
-                String FZJGZZJGDM = "11110000000021485U";
+                String ZZMC = "北京市普通高等学校优秀毕业生荣誉证书";
+                String ZZHM = cell1.getContents();
+                String CYRMC = cell2.getContents();
+                String CYRSFZJLX = cell3.getContents();
+                String CYRSFZJHM = cell4.getContents();
+                String FZJGMC = "北京市教育委员会";
+                String FZJGZZJGDM = "11110000000026833B";
                 String FZJGSSXZQHDM = "110000";
-                String FZRQ = cell9.getContents();
-                String YXQJSRQ = cell10.getContents();
-                String GZDW = cell11.getContents();
-                String XMMC = cell12.getContents();
-                String CPYDJ = cell13.getContents();
-//                String BL1 = cell14.getContents();
-//                String BL2 = cell15.getContents();
-                String ZP = cell16.getContents();
-                String format = "jpg";
-                File f = new File("C:\\Users\\潘强\\Desktop\\委办制证\\yijicaipanyuanzhengshu\\zhaopian\\" + ZP + "." + format);
-                if (!f.exists()) {
-                    format = "png";
-                    f = new File("C:\\Users\\潘强\\Desktop\\委办制证\\yijicaipanyuanzhengshu\\zhaopian\\" + ZP + "." + format);
-                }
-
-                if (!f.exists()) {
-                    format = "jpeg";
-                }
-
-                String GRZP = getImageBinary(ZP, format).replaceAll("\r|\n", "");
-                String CSRQ;
-                if (GRZP.equals("无此照片") || GRZP == "无此照片") {
-                    FileOutputStream fos = new FileOutputStream("C:\\Users\\潘强\\Desktop\\委办制证\\yijicaipanyuanzhengshu\\notImg.txt", true);
-                    CSRQ = CYRSFZJHM + "无此数据照片\r\n";
-                    byte[] bytes = CSRQ.getBytes();
-                    fos.write(bytes);
-                    fos.close();
-                }
-
-               /* String XB = cell12.getContents();
-                CSRQ = cell13.getContents();
-                String MZ = cell14.getContents();
-                String ZDXM = cell15.getContents();
-
-                String ZDZD = cell16.getContents();
-                String DBDW = cell17.getContents();*/
+                String FZRQ = cell8.getContents();
+                String YXQJSRQ = "";
+                String YXMC = cell10.getContents();
+                String YXDM = cell11.getContents();
+                String BYNF = cell12.getContents();
+                String XB = cell13.getContents();
+                String XL = cell14.getContents();
+                String ZY = cell15.getContents();
+                String ZH = cell16.getContents();
 
                 try {
-                    URL url = new URL("http://172.26.50.55:9090/license-app/v1/license/100069001000021485110000/issue?access_token=" + access_token);
+                    URL url = new URL("http://192.158.148.58:9090/license-app/v1/license/200089501000026833110000/issue?access_token=" + access_token);
                     HttpURLConnection connection = (HttpURLConnection)url.openConnection();
                     connection.setRequestMethod("POST");
                     connection.setDoOutput(true);
@@ -220,7 +220,7 @@ public class YJCPYZ {
                     JSONObject data_fields = new JSONObject();
                     JSONArray jsonArray = new JSONArray();
                     JSONObject json3 = new JSONObject();
-                    JSONObject jsonImg = new JSONObject();
+                    new JSONObject();
                     data_fields.put("ZZHM", ZZHM);
                     data_fields.put("ZZMC", ZZMC);
                     data_fields.put("CYRMC", CYRMC);
@@ -231,27 +231,22 @@ public class YJCPYZ {
                     data_fields.put("FZJGSSXZQHDM", FZJGSSXZQHDM);
                     data_fields.put("FZRQ", FZRQ);
                     data_fields.put("YXQJSRQ", YXQJSRQ);
-                    data_fields.put("GZDW",GZDW);
-                    data_fields.put("XMMC",XMMC);
-                    data_fields.put("CPYDJ",CPYDJ);
-                    if (GRZP.equals("无此照片")) {
-                        data_fields.put("ZP", "");
-                    } else {
-                        jsonImg.put("file_suffix", "." + format);
-                        jsonImg.put("file_data", GRZP);
-                        data_fields.put("ZP", jsonImg);
-                    }
-
-
+                    data_fields.put("YXMC", YXMC);
+                    data_fields.put("YXDM", YXDM);
+                    data_fields.put("BYNF", BYNF);
+                    data_fields.put("XB", XB);
+                    data_fields.put("XL", XL);
+                    data_fields.put("ZY", ZY);
+                    data_fields.put("ZH", ZH);
                     json1.put("data_fields", data_fields);
-                    json1.put("service_item_code", "11110034567890876H2000132039001");
-                    json1.put("service_item_name", "一级裁判员证书");
+                    json1.put("service_item_code", "11110000000026833B200080501200001");
+                    json1.put("service_item_name", "省普通高校优秀毕业生表彰");
                     json1.put("license_group", "组别1");
-                    json1.put("seal_code", "DZYZ000021485QkDNYe");
+                    json1.put("seal_code", "DZYZ000026833vlDIhd");
                     json1.put("operator", json2);
                     json2.put("account", "gonganjudaizhizheng");
-                    json2.put("name", "张浩");
-                    json2.put("identity_num", "372925200001211933");
+                    json2.put("name", "潘强");
+                    json2.put("identity_num", "130481199706242117");
                     json2.put("role", "证照系统管理员");
                     json2.put("service_org", "bjca");
                     json2.put("division", "BJCA");
@@ -279,14 +274,14 @@ public class YJCPYZ {
                             JSONObject JsonData_Fields = JSONObject.parseObject(data);
                             String license_code = JsonData_Fields.get("license_code").toString();
                             String auth_code = JsonData_Fields.get("auth_code").toString();
-                            String SUCCESS = "证照号码：" + ZZHM + "," + license_code + "," + auth_code;
-                            FileOutputStream fos = new FileOutputStream("C:\\Users\\潘强\\Desktop\\委办制证\\yijicaipanyuanzhengshu\\SUCCESS.txt", true);
+                            String SUCCESS = YXMC + "_" + CYRMC + "_" + CYRSFZJHM + "," + license_code + "," + auth_code;
+                            FileOutputStream fos = new FileOutputStream("/share/jzz/YXBYSZS/SUCCESS.txt", true);
                             str = SUCCESS + "\r\n";
                             byte[] bytes = str.getBytes();
                             fos.write(bytes);
                             fos.close();
                         } else if (ack_code1.equals("FAILURE")) {
-                            FileOutputStream fos = new FileOutputStream("C:\\Users\\潘强\\Desktop\\委办制证\\yijicaipanyuanzhengshu\\FAILURE.txt", true);
+                            FileOutputStream fos = new FileOutputStream("/share/jzz/YXBYSZS/FAILURE.txt", true);
                             str = ZZHM + ":" + result + "\r\n";
                             byte[] bytes = str.getBytes();
                             fos.write(bytes);
@@ -295,16 +290,59 @@ public class YJCPYZ {
 
                         System.out.println("持证人身份证号码：" + CYRSFZJHM + "制证" + ack_code1 + "-----" + result);
                     }
-                } catch (Exception var68) {
-                    var68.printStackTrace();
+                } catch (Exception var64) {
+                    var64.printStackTrace();
                 }
 
                 ++i;
             }
-        } catch (Exception var69) {
-            System.out.println(var69);
+        } catch (Exception var65) {
+            System.out.println(var65);
         }
 
+    }
+
+    public static String archive(String access_token, String auth_code, String pdfName) {
+        try {
+            String realUrl = "http://192.158.148.58:9090/license-app/v1/license/archive?auth_code=" + auth_code + "&access_token=" + access_token + "&show_sensitive_data=false";
+            URL url = new URL(realUrl);
+            HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+            conn.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+            conn.setConnectTimeout(10000);
+            conn.setRequestMethod("GET");
+            conn.setUseCaches(false);
+            conn.connect();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+            String line;
+            String result;
+            for(result = ""; (line = reader.readLine()) != null; result = result + line) {
+            }
+
+            JSONObject jsonObject = JSONObject.parseObject(result);
+            Object jsonData = jsonObject.get("data");
+            JSONObject data = (JSONObject)jsonData;
+            String file_name = data.getString("file_name");
+            String file_data = data.getString("file_data");
+            if (result.contains("SUCCESS")) {
+                base64StringToPDF(file_data, pdfName);
+                System.out.println("证照号码：" + pdfName + "归档成功");
+            } else {
+                System.out.println("证照号码：" + pdfName + "归档失败");
+            }
+
+            reader.close();
+            conn.disconnect();
+            return result;
+        } catch (MalformedURLException var14) {
+            var14.printStackTrace();
+        } catch (SocketTimeoutException var15) {
+            var15.printStackTrace();
+        } catch (IOException var16) {
+            var16.printStackTrace();
+        }
+
+        return "";
     }
 
     static void base64StringToPDF(String base64sString, String pdfName) {
@@ -316,7 +354,7 @@ public class YJCPYZ {
             byte[] bytes = decoder.decodeBuffer(base64sString);
             ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
             bin = new BufferedInputStream(bais);
-            File file = new File("C:\\Users\\潘强\\Desktop\\委办制证\\yijicaipanyuanzhengshu\\PDF\\" + pdfName + ".pdf");
+            File file = new File("/share/jzz/YXBYSZS/PDF/" + pdfName + ".pdf");
             fout = new FileOutputStream(file);
             bout = new BufferedOutputStream(fout);
             byte[] buffers = new byte[1024];
@@ -353,19 +391,19 @@ public class YJCPYZ {
         return buffer.toString();
     }
 
-    static String getImageBinary(String img, String format) {
-        System.out.println("img = " + img + ",format = " + format);
-        File f = new File("C:\\Users\\潘强\\Desktop\\委办制证\\yijicaipanyuanzhengshu\\zhaopian\\" + img + "." + format);
+    static String getImageBinary(String img) {
+        File f = new File("/data/JSZGZ/20231030/FZZP/" + img);
 
         try {
             BufferedImage bi = ImageIO.read(f);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ImageIO.write(bi, format, baos);
+            ImageIO.write(bi, "jpg", baos);
             byte[] bytes = baos.toByteArray();
             return encoder.encodeBuffer(bytes).trim();
-        } catch (Exception var6) {
-            var6.printStackTrace();
+        } catch (Exception var5) {
+            var5.printStackTrace();
             return "无此照片";
         }
     }
 }
+
