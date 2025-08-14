@@ -70,10 +70,10 @@ public class ExcelReader_CHINADate {
             headerRow.createCell(4).setCellValue("idCode");
             headerRow.createCell(5).setCellValue("expiryDate");
             headerRow.createCell(6).setCellValue("holderName");
-            headerRow.createCell(7).setCellValue("name");
+            headerRow.createCell(7).setCellValue("implementCode");
             headerRow.createCell(8).setCellValue("abolishBasis");
-            headerRow.createCell(9).setCellValue("licenseStatus");
-
+            headerRow.createCell(9).setCellValue("issueOrgName");
+            headerRow.createCell(10).setCellValue("name");
             Iterator<JsonNode> elements = hitsNode.elements();
             int rowIndex = 1;
             while (elements.hasNext()) {
@@ -123,11 +123,13 @@ public class ExcelReader_CHINADate {
                 String expiryDate = sourceNode.path("expiryDate").asText("");
                 row.createCell(5).setCellValue(convertToChinaTime(expiryDate));
                 //name
-                row.createCell(7).setCellValue(sourceNode.path("name").asText(""));
+                row.createCell(10).setCellValue(sourceNode.path("name").asText(""));
+                row.createCell(7).setCellValue(sourceNode.path("implementCode").asText(""));
+
                 //abolishBasis
                 row.createCell(8).setCellValue(sourceNode.path("abolishBasis").asText(""));
 
-                row.createCell(9).setCellValue(sourceNode.path("licenseStatus").asText(""));
+                row.createCell(9).setCellValue(sourceNode.path("issueOrgName").asText(""));
 
                 // holderName
                 JsonNode holderName = sourceNode.path("holderName");
@@ -139,7 +141,7 @@ public class ExcelReader_CHINADate {
             }
 
             // 写入Excel文件
-            try (FileOutputStream fileOut = new FileOutputStream("C:\\Users\\潘强\\Desktop\\饲料生产许可证.xlsx")) {
+            try (FileOutputStream fileOut = new FileOutputStream("C:\\Users\\潘强\\Desktop\\中华人民共和国道路运输证.xlsx")) {
                 workbook.write(fileOut);
                 System.out.println("Excel 文件生成成功！");
             } catch (IOException e) {

@@ -15,44 +15,42 @@ import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-/*
-* 根据表格中身份证号和idCode，按照身份证号去走更新接口替换idcode
-*
-* */
-
-
 public class LicenseProcessor {
     // 配置常量
-    private static final String ACCESS_TOKEN = "f7cbe636-0311-49e0-8474-015f4c22651a";
-    private static final String BASE_URL = "http://192.168.136.15:9090/license-app/v1/license/";
+    private static final String ACCESS_TOKEN = "b0bc3761-51f4-496c-b436-5cea4720b984";
+    private static final String BASE_URL = "http://172.26.50.55:9090/license-app/v1/license/";
     private static final String EXCEL_PATH = "C:\\Users\\潘强\\Desktop\\input.xlsx";
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-    // 用于存储身份证号和对应的新ZZHM值
+    // 用于存储身份证号、新ZZHM值和idCode
     static class IdCardInfo {
         String idCard;
         String newZzhm;
+        String idCode; // 新增字段，用于存储第三列的id_code值
 
-        IdCardInfo(String idCard, String newZzhm) {
+        IdCardInfo(String idCard, String newZzhm, String idCode) {
             this.idCard = idCard;
             this.newZzhm = newZzhm;
+            this.idCode = idCode;
         }
     }
 
     public static void main(String[] args) throws Exception {
-        // 1. 读取Excel中的身份证号和新ZZHM值
+        // 1. 读取Excel中的身份证号、新ZZHM值和idCode
         List<IdCardInfo> idCardInfos = readIdCardsFromExcel(EXCEL_PATH);
 
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             for (IdCardInfo info : idCardInfos) {
                 String idCard = info.idCard;
                 String newZzhm = info.newZzhm;
+                String idCode = info.idCode; // 获取idCode值
 
                 System.out.println("\n============ 开始处理身份证: " + idCard + " ============");
                 System.out.println("从Excel读取的新ZZHM值: " + newZzhm);
+                System.out.println("从Excel读取的idCode值: " + idCode);
 
-                // 2. 调用"依职能"接口
-                JsonObject authResult = callAuthApi(httpClient, idCard);
+                // 2. 调用"依职能"接口，传入idCode
+                JsonObject authResult = callAuthApi(httpClient, idCard, idCode);
                 if (authResult == null) continue;
 
                 // 3. 获取auth_code和license_code
@@ -82,7 +80,7 @@ public class LicenseProcessor {
         }
     }
 
-    // 读取Excel中的身份证号和第二列的新ZZHM值
+    // 读取Excel中的身份证号、第二列的新ZZHM值和第三列的idCode
     private static List<IdCardInfo> readIdCardsFromExcel(String filePath) throws Exception {
         List<IdCardInfo> idCardInfos = new ArrayList<>();
         try (FileInputStream fis = new FileInputStream(new File(filePath));
@@ -91,7 +89,8 @@ public class LicenseProcessor {
             Sheet sheet = workbook.getSheetAt(0);
             for (Row row : sheet) {
                 Cell idCardCell = row.getCell(0);
-                Cell newZzhmCell = row.getCell(1); // 第二列
+                Cell newZzhmCell = row.getCell(1); // 第二列: 新ZZHM值
+                Cell idCodeCell = row.getCell(2); // 第三列: idCode值
 
                 if (idCardCell == null) continue;
 
@@ -116,15 +115,25 @@ public class LicenseProcessor {
                     }
                 }
 
-                idCardInfos.add(new IdCardInfo(idCard, newZzhm));
+                // 处理第三列的idCode值
+                String idCode = "";
+                if (idCodeCell != null) {
+                    if (idCodeCell.getCellType() == CellType.STRING) {
+                        idCode = idCodeCell.getStringCellValue();
+                    } else if (idCodeCell.getCellType() == CellType.NUMERIC) {
+                        idCode = String.valueOf((long) idCodeCell.getNumericCellValue());
+                    }
+                }
+
+                idCardInfos.add(new IdCardInfo(idCard, newZzhm, idCode));
             }
         }
         System.out.println("📊 从Excel读取到 " + idCardInfos.size() + " 条记录");
         return idCardInfos;
     }
 
-    // 调用"依职能"接口 - 添加UTF-8编码支持
-    private static JsonObject callAuthApi(CloseableHttpClient httpClient, String idCard) throws Exception {
+    // 修改后的callAuthApi方法：添加id_code参数
+    private static JsonObject callAuthApi(CloseableHttpClient httpClient, String idCard, String idCode) throws Exception {
         String endpoint = "auth";
         HttpPost post = new HttpPost(BASE_URL + endpoint + "?access_token=" + ACCESS_TOKEN);
         post.setHeader("Content-Type", "application/json; charset=utf-8");
@@ -132,7 +141,9 @@ public class LicenseProcessor {
         // 构建请求体
         JsonObject requestBody = new JsonObject();
         requestBody.addProperty("identity_number", idCard);
-        requestBody.addProperty("service_item_code", "111130345013002717420243");
+        requestBody.addProperty("id_code", idCode); // 添加id_code字段
+
+        requestBody.addProperty("service_item_code", "JTXCXWX5RcTtIoyb1SeUtkYDWCXSX");
         requestBody.addProperty("service_item_name", "收养子女在京入户");
         requestBody.addProperty("page_size", 150);
         requestBody.addProperty("page_index", 1);
@@ -150,7 +161,6 @@ public class LicenseProcessor {
         requestBody.add("operator", operator);
 
         String requestJson = requestBody.toString();
-        // 明确指定UTF-8编码
         post.setEntity(new StringEntity(requestJson, StandardCharsets.UTF_8));
         System.out.println("\n🔍 调用依职能接口 (" + endpoint + ")");
         System.out.println("请求体: " + requestJson);
@@ -234,7 +244,7 @@ public class LicenseProcessor {
 
     // 调用变更接口 - 添加UTF-8编码支持
     private static void callChangeApi(CloseableHttpClient httpClient, JsonObject dataFields, String licenseCode) throws Exception {
-        String endpoint = "10000760100002888X110000/change";
+        String endpoint = "100032901MB166401X110000/change";
         HttpPost post = new HttpPost(BASE_URL + endpoint + "?access_token=" + ACCESS_TOKEN);
         post.setHeader("Content-Type", "application/json; charset=utf-8");
 
@@ -254,7 +264,7 @@ public class LicenseProcessor {
         operator.addProperty("service_org", "bjca");
         data.add("operator", operator);
 
-        data.addProperty("seal_code", "DZYZ00002888XWJAgjY");
+        data.addProperty("seal_code", "DZYZMB166401XWQVNLq");
         data.addProperty("service_item_code", "12345676543211234566");
         data.addProperty("service_item_name", "CA测试事项");
 

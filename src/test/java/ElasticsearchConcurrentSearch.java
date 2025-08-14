@@ -338,9 +338,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ElasticsearchConcurrentSearch {
 
     // 配置参数
-    private static final String ELASTICSEARCH_URL = "http://172.25.173.91:9200/test_license/_search";
+    private static final String ELASTICSEARCH_URL = "http://172.25.173.95:9200/test_license/_search";
     private static final String AUTHORIZATION = "Basic ZWxhc3RpYzoxcWF6WkFRIQ==";
-    private static final int CONCURRENT_REQUESTS = 500; // 单次并发数
+    private static final int CONCURRENT_REQUESTS = 400; // 单次并发数
     private static final int TIMEOUT_MS = 10000; // 10秒超时
     private static final int TOTAL_DURATION_MINUTES = 10; // 总运行时间（分钟）
     private static final int INTERVAL_SECONDS = 10; // 请求间隔时间（秒）
@@ -406,7 +406,7 @@ public class ElasticsearchConcurrentSearch {
             connection.setReadTimeout(TIMEOUT_MS);
 
             // 设置请求体
-            String jsonBody = "{\"size\":10000,\"query\":{\"bool\":{\"must\":[]}}}";
+            String jsonBody = "{\"size\":6000,\"query\":{\"bool\":{\"must\":[]}}}";
             try (OutputStream os = connection.getOutputStream()) {
                 byte[] input = jsonBody.getBytes("utf-8");
                 os.write(input, 0, input.length);

@@ -49,8 +49,8 @@ public class ESJsonToTxt {
 
     public static void main(String[] args) {
         // 输入输出文件路径
-        String inputFilePath = "C:\\Users\\潘强\\Desktop\\export_10000710100002888X110000.txt";
-        String outputFilePath = "C:\\Users\\潘强\\Desktop\\行驶证.txt";
+        String inputFilePath = "C:\\Users\\潘强\\Desktop\\export_10001460100002888X110000.txt";
+        String outputFilePath = "C:\\Users\\潘强\\Desktop\\中华人民共和国保安员证.txt";
 
         // 计数器和性能指标
         AtomicInteger totalProcessed = new AtomicInteger(0);
@@ -62,8 +62,8 @@ public class ESJsonToTxt {
             // 写入CSV表头
 //            writer.write("LicenseCode,HolderIdentityNum,holderName,createdDate,issueDate,idCode\n");
 //            writer.write("HolderIdentityNum,holderName,issueDate,idCode\n");
-            writer.write("LicenseCode,createdDate,idCode,HolderIdentityNum\n");
-//            writer.write("licenseCode\n");
+            writer.write("LicenseCode,issueDate,idCode,HolderIdentityNum\n");
+//            writer.write("idCode,issueDate,expiryDate\n");
             ObjectMapper mapper = new ObjectMapper();
             String line;
 
@@ -85,32 +85,33 @@ public class ESJsonToTxt {
 
                         // 提取字段
                         String licenseCode = source.path("licenseCode").asText();
-//                        String idCode = source.path("idCode").asText();
-/*                        JsonNode idNumNode = source.path("holderIdentityNum");
-                        String holderIdentityNum = idNumNode.isArray() && idNumNode.size() > 0
-                                ? idNumNode.get(0).asText()
-                                : "";*/
-//
-//                        String formattedCreatedDate = convertToChinaTime(source.path("createdDate").asText());
-//                        String formattedexpiryDate = convertToChinaTime(source.path("expiryDate").asText());
-
-                        // 处理holderIdentityNum数组
+                        String idCode = source.path("idCode").asText();
                         JsonNode idNumNode = source.path("holderIdentityNum");
                         String holderIdentityNum = idNumNode.isArray() && idNumNode.size() > 0
                                 ? idNumNode.get(0).asText()
                                 : "";
+//
+//                        String formattedCreatedDate = convertToChinaTime(source.path("createdDate").asText());
+                         String formattedissueDate = convertToChinaTime(source.path("issueDate").asText());
+//                        String formattedexpiryDate = convertToChinaTime(source.path("expiryDate").asText());
+
+                        // 处理holderIdentityNum数组
+                  /*      JsonNode idNumNode = source.path("holderIdentityNum");
+                        String holderIdentityNum = idNumNode.isArray() && idNumNode.size() > 0
+                                ? idNumNode.get(0).asText()
+                                : "";*/
 //                        JsonNode holderName1 = source.path("holderName");
 //                        String holderName = holderName1.isArray() && holderName1.size() > 0
 //                                ? holderName1.get(0).asText()
 //                                : "";
 
-                        String createdDate = source.path("createdDate").asText();
+//                        String createdDate = source.path("createdDate").asText();
 //
 //                        String issueDate = source.path("issueDate").asText();
-                        String idCode = source.path("idCode").asText();
+//                        String idCode = source.path("idCode").asText();
 
                         // 转换日期格式
-                        String formattedCreatedDate = convertToChinaTime(createdDate);
+//                        String formattedCreatedDate = convertToChinaTime(createdDate);
 //                        String formattedIssueDate = convertToChinaTime(issueDate);
 
                         // 写入CSV行
@@ -123,24 +124,24 @@ public class ESJsonToTxt {
                                 escapeCsv(idCode)
                                 );*/
 
-                        String csvLine = String.format("%s,%s,%s,%s\n",
-
-                                escapeCsv(licenseCode),
-                                escapeCsv(formattedCreatedDate),
-                                escapeCsv(idCode),
-                                escapeCsv(holderIdentityNum)
-                                );
+//                        String csvLine = String.format("%s,%s,%s\n",
+//
+//                                escapeCsv(idCode),
+//                                escapeCsv(formattedissueDate),
+//                                escapeCsv(formattedexpiryDate)
+//                                );
 /*                        String csvLine = String.format("%s,%s,%s,%s\n",
                                 escapeCsv(licenseCode),
                                 escapeCsv(formattedCreatedDate),
                                 escapeCsv(idCode),
                                 escapeCsv(formattedexpiryDate)
                                 );*/
-/*                        String csvLine = String.format("%s\n",
-                                escapeCsv(licenseCode)
-//                                escapeCsv(formattedCreatedDate),
-//                                escapeCsv(holderIdentityNum)
-                        );*/
+                        String csvLine = String.format("%s,%s,%s,%s\n",
+                                escapeCsv(licenseCode),
+                                escapeCsv(formattedissueDate),
+                                escapeCsv(idCode),
+                                escapeCsv(holderIdentityNum)
+                        );
                         writer.write(csvLine);
 
                         // 更新计数器

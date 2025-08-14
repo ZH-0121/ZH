@@ -28,9 +28,9 @@ public class ESJsonToExcel_1 {
     }
 
     public static void main(String[] args) {
-        String inputFilePath = "C:\\Users\\潘强\\Desktop\\export_200008201092921359110000.txt";
+        String inputFilePath = "C:\\Users\\潘强\\Desktop\\export_10000760100002888X110000_0718.txt";
         // 修改输出为CSV格式（Excel可打开）
-        String outputFilePath = "C:\\Users\\潘强\\Desktop\\出生医学证明.csv";
+        String outputFilePath = "C:\\Users\\潘强\\Desktop\\身份证过期71.csv";
 
         AtomicInteger totalProcessed = new AtomicInteger(0);
         long startTime = System.currentTimeMillis();
@@ -46,7 +46,7 @@ public class ESJsonToExcel_1 {
 //            writer.write("idCode,licenseCode,createdDate,expiryDate,holderIdentityNum\n"); // Excel列标题
 //            writer.write("idCode,licenseCode,expiryDate,holderIdentityNum\n"); // Excel列标题
 
-            writer.write("idCode,licenseCode,createdDate,issueDate,holderIdentityNum,implementCode,issueOrgName\n"); // Excel列标题
+            writer.write("idCode,licenseCode,createdDate,expiryDate,issueDate,holderIdentityNum,implementCode,issueOrgName\n"); // Excel列标题
             ObjectMapper mapper = new ObjectMapper();
             String line;
 
@@ -63,7 +63,7 @@ public class ESJsonToExcel_1 {
                         String licenseCode = source.path("licenseCode").asText();
                         String idCode = source.path("idCode").asText();
                         String createdDate = source.path("createdDate").asText();
-//                        String expiryDate = source.path("expiryDate").asText();
+                        String expiryDate = source.path("expiryDate").asText();
                         String issueDate = source.path("issueDate").asText();
                         // 处理holderIdentityNum数组
                         JsonNode identityNumNode = source.path("holderIdentityNum");
@@ -86,7 +86,7 @@ public class ESJsonToExcel_1 {
                         writer.write(escapeCsv(idCode)+","
                                 +escapeCsv(licenseCode) +","
                                 + escapeCsv(convertToChinaTime(createdDate))+","
-//                                +escapeCsv(convertToChinaTime(expiryDate))+","
+                               +escapeCsv(convertToChinaTime(expiryDate))+","
                                 +escapeCsv(convertToChinaTime(issueDate))+","
                                 +escapeCsv(holderIdentityNum) +","
                                 +escapeCsv(implementCode) +","
